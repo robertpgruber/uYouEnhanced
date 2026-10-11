@@ -4,4 +4,3 @@
 @interface ColourOptionsController2 : UIColorPickerViewController <UIColorPickerViewControllerDelegate>
 
 @end
-

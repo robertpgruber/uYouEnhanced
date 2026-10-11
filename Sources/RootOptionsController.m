@@ -1,34 +1,6 @@
-#import "UYTFileSize.h"
 #import "RootOptionsController.h"
 #import "ColourOptionsController.h"
 #import "ColourOptionsController2.h"
-#import <objc/message.h>
-#import <objc/runtime.h>
-
-static UIVisualEffect *UYTLiquidGlassEffect(void) {
-    Class glassClass = NSClassFromString(@"UIGlassEffect");
-    if (glassClass == nil) {
-        return nil;
-    }
-    UIVisualEffect *glass = nil;
-    SEL factory = NSSelectorFromString(@"effectWithStyle:");
-    if ([glassClass respondsToSelector:factory]) {
-        glass = ((UIVisualEffect *(*)(id, SEL, NSInteger))objc_msgSend)(glassClass, factory, 0);
-    }
-
-    if (glass == nil) {
-        glass = [[glassClass alloc] init];
-    }
-    if (glass == nil) {
-        return nil;
-    }
-
-    if ([glass respondsToSelector:NSSelectorFromString(@"setIsInteractive:")]) {
-        [glass setValue:@YES forKey:@"isInteractive"];
-    }
-
-    return glass;
-}
 
 @interface RootOptionsController ()
 
@@ -91,21 +63,10 @@ static UIVisualEffect *UYTLiquidGlassEffect(void) {
     }
 }
 
+// Floating capsule bar (iOS 18+): quick actions without scrolling.
 - (void)setupFloatingTabBar {
-    UIVisualEffect *glass = UYTLiquidGlassEffect();
-
-    UIView *pill = nil;
-    UIView *host = nil;
-    if (glass != nil) {
-        UIVisualEffectView *glassView = [[UIVisualEffectView alloc] initWithEffect:glass];
-        pill = glassView;
-        host = glassView.contentView;
-    } else {
-        pill = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220, 52)];
-        pill.backgroundColor = [UIColor secondarySystemGroupedBackgroundColor];
-        host = pill;
-    }
-
+    UIView *pill = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220, 52)];
+    pill.backgroundColor = [UIColor secondarySystemGroupedBackgroundColor];
     pill.layer.cornerRadius = 26;
     pill.layer.cornerCurve = kCACornerCurveContinuous;
     pill.layer.shadowColor = UIColor.blackColor.CGColor;
@@ -122,7 +83,7 @@ static UIVisualEffect *UYTLiquidGlassEffect(void) {
         [b setImage:[UIImage systemImageNamed:icons[i]] forState:UIControlStateNormal];
         b.tintColor = [UIColor labelColor];
         [b addTarget:self action:NSSelectorFromString(actions[i]) forControlEvents:UIControlEventTouchUpInside];
-        [host addSubview:b];
+        [pill addSubview:b];
     }
 
     [self.view addSubview:pill];
@@ -228,7 +189,7 @@ static UIVisualEffect *UYTLiquidGlassEffect(void) {
     for (NSString *fileName in filesArray) {
         NSString *filePath = [cachePath stringByAppendingPathComponent:fileName];
         NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-        folderSize += UYTSizeOfAttrs(fileAttributes);
+        folderSize += [fileAttributes fileSize];
     }
 
     NSByteCountFormatter *formatter = [[NSByteCountFormatter alloc] init];

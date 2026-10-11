@@ -7,11 +7,13 @@
 #import <YouTubeHeader/YTToastResponderEvent.h>
 #import "uYouPlus.h"
 
+// custom
 @interface YTSettingsCell ()
 - (void)setIndicatorIcon:(int)icon;
 - (void)setTitleDescription:(id)titleDescription;
 @end
 
+// For displaying snackbars
 @interface YTHUDMessage : NSObject
 + (id)messageWithText:(id)text;
 - (void)setAction:(id)action;
@@ -26,4 +28,3 @@
 - (void)showMessageMainThread:(id)message;
 + (id)sharedInstance;
 @end
-

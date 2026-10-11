@@ -11,6 +11,7 @@
 #import <YouTubeHeader/GPBUnknownField.h>
 #import <YouTubeHeader/GPBUnknownFields.h>
 #import "uYouPlus.h"
+#import "uYouPatches.h"
 
 @interface ELMPBProperties (uYouEnhanced)
 - (id)firstSubmessage;
@@ -21,6 +22,7 @@
 - (NSString *)identifier;
 @end
 
+// iOS 16 uYou crash fix - @level3tjg: https://github.com/qnblackcat/uYouPlus/pull/224
 @interface OBPrivacyLinkButton : UIButton
 - (instancetype)initWithCaption:(NSString *)caption
                      buttonText:(NSString *)buttonText
@@ -30,6 +32,7 @@
                 displayLanguage:(NSString *)displayLanguage;
 @end
 
+// YouTube Native Share 0.2.7 Headers - https://github.com/jkhsjdhjs/youtube-native-share - @jkhsjdhjs
 @interface CustomGPBMessage : GPBMessage
 + (instancetype)deserializeFromString:(NSString*)string;
 @end
@@ -44,4 +47,3 @@
 
 @interface YTShareEntityEndpointCommandHandler : NSObject
 @end
-

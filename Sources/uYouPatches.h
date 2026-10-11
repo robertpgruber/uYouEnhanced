@@ -1,9 +1,12 @@
 #import "uYouPlus.h"
 #import <YouTubeHeader/GOODialogView.h>
 
+// Access Group / Sideloading utilities
+// Shared between uYouPlusPatches.xm and uYouPatches.xm
 NSString *uYouAccessGroupID();
 BOOL uYouIsSideStore();
 
+// From uYou 3.0.4 source (a0zhar/uYou-3.0.4-src)
 @interface PlayerManager : NSObject
 + (id)sharedInstance;
 - (float)progress;
@@ -24,11 +27,9 @@ BOOL uYouIsSideStore();
 - (void)mergeAudioWithVideoForDownloadItem:(id)item;
 - (int)convertVideo:(id)video toAudio:(id)audio;
 - (void)convertAsyncMkvToMp4:(id)path forUYouItem:(id)item;
+- (int)ffmpegWithArguments:(id)arguments;
 - (void)setupURLSessionConfiguration;
 - (void)createDownloadTask;
-- (void)reloadDownloadedVC;
-- (NSMutableArray *)downloadItemsArray;
-- (void)setDownloadingItems:(id)items;
 - (void)exportVideoToCameraRollWithPath:(id)path removeFile:(BOOL)remove;
 - (void)dismissHUD;
 - (void)errorHUDWithMeessage:(id)message inView:(id)view delay:(double)delay;
@@ -55,7 +56,6 @@ BOOL uYouIsSideStore();
 
 @interface uYouItem : NSObject
 - (BOOL)isMP4;
-- (BOOL)isDownloadFinished;
 @property (nonatomic, strong) NSString *videoID;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *channel;
@@ -77,6 +77,12 @@ BOOL uYouIsSideStore();
 @property (nonatomic, strong) NSString *title;
 @end
 
+// NOTE: YTIStreamingData, YTIFormatStream, YTPlaybackData, YTSingleVideoController,
+// YTPlayerResponse, YTIPlayerResponse, YTPlayerOverlayManager,
+// YTMainAppVideoPlayerOverlayViewController, YTPlayerViewController are already
+// declared in Tweaks/YouTubeHeader/. HAMPlayerInternal and MLHAMQueuePlayer
+// are already declared in Sources/uYouPlus.h. Do NOT re-declare them here.
+
 @interface YTPlayerViewController (uYouPatches)
 - (void)setPlaybackRate:(float)rate;
 @end
@@ -85,6 +91,14 @@ BOOL uYouIsSideStore();
 - (float)rate;
 @end
 
+// Bundled inside uYou's payload; used for webm -> m4a audio conversion (#771/#465)
+// NOT linked against this tweak: always call via %c(MobileFFmpeg) runtime lookup.
+// A bare [MobileFFmpeg ...] reference emits _OBJC_CLASS_$_MobileFFmpeg and fails to link.
+@interface MobileFFmpeg : NSObject
++ (int)executeWithArguments:(NSArray *)arguments;
+@end
+
+// Minimal declaration so touch-forwarding hooks can use UIView's nextResponder
 @interface YTFullScreenEngagementOverlayView : UIView
 @end
 
@@ -109,4 +123,3 @@ BOOL uYouIsSideStore();
 @interface UILabel (uYouEnhanced)
 + (id)_defaultColor;
 @end
-
