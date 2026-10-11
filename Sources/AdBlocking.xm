@@ -237,10 +237,10 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
 %end
 
 %ctor {
-    if (IS_ENABLED(kAdBlockWorkaroundLite)) {
+    if (NO) {
         %init(uYouAdBlockingWorkaroundLite);
     }
-    if (IS_ENABLED(kAdBlockWorkaround)) {
+    if (YES) {
         %init(uYouAdBlockingWorkaround);
     }
 }
